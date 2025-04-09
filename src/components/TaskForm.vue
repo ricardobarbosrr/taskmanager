@@ -101,9 +101,9 @@ export default defineComponent({
           emit('edit-task', updatedTask)
         } else {
           const newTask: Task = {
-            id: Date.now(),
             ...taskData,
-            createdAt: new Date().toISOString()
+            createdAt: new Date().toISOString(),
+            status: 'pendente' as const
           }
           emit('add-task', newTask)
         }

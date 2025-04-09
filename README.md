@@ -13,55 +13,84 @@ O Gerenciador de Tarefas é uma aplicação moderna e eficiente desenvolvida com
   - TypeScript
   - Tailwind CSS para estilização
   - Vite como bundler
-  - Vue Router (planejado)
-  - Pinia (planejado)
+  - Axios para requisições HTTP
+
+- **Backend**
+  - Node.js com Express
+  - fs-extra para operações com arquivos
+  - CORS para requisições cross-origin
 
 ## Funcionalidades
 
-- Adicionar novas tarefas
-- Visualizar lista de tarefas
-- Filtrar tarefas por status
+- Adicionar novas tarefas com título, descrição, data e hora de vencimento
+- Visualizar lista de tarefas em uma interface amigável
+- Editar tarefas existentes
+- Excluir tarefas
 - Marcar tarefas como concluídas
 - Organização visual com cards
 - Interface responsiva
 - Validação de dados
+- Persistência de dados em arquivo JSON
 
 ## Instalação
 
 1. Clone o repositório
 ```bash
-git clone [URL_DO_REPOSITORIO]
+git clone https://github.com/ricardobarbosrr/taskmanager.git
 ```
 
-2. Instale as dependências
+2. Instale as dependências do frontend
 ```bash
+cd frontend
 npm install
 ```
 
-3. Inicie o servidor de desenvolvimento
+3. Instale as dependências do backend
+```bash
+cd backend
+npm install
+```
+
+4. Inicie o servidor backend
+```bash
+node server.js
+```
+
+5. Inicie o frontend em outro terminal
 ```bash
 npm run dev
 ```
 
-4. Acesse a aplicação em `http://localhost:5173`
+6. Acesse a aplicação em `http://localhost:5173`
 
 ## Estrutura do Projeto
 
 ```
-src/
-├── components/      # Componentes Vue
-├── types/          # Tipos TypeScript
-├── App.vue         # Componente principal
-└── main.ts         # Ponto de entrada
+frontend/
+├── src/
+│   ├── components/      # Componentes Vue
+│   ├── services/        # Serviços de API
+│   ├── types/          # Tipos TypeScript
+│   ├── App.vue         # Componente principal
+│   └── main.ts         # Ponto de entrada
+└── public/             # Arquivos estáticos
+
+backend/
+├── server.js          # Servidor Express
+└── tasks.json         # Arquivo de dados
 ```
 
-## Estilização
+## API Endpoints
 
-O projeto utiliza Tailwind CSS para estilização, garantindo um design moderno e responsivo. As classes Tailwind são aplicadas diretamente nos componentes Vue.
+- `GET /api/tasks` - Lista todas as tarefas
+- `POST /api/tasks` - Adiciona uma nova tarefa
+- `PUT /api/tasks/:id` - Atualiza uma tarefa existente
+- `DELETE /api/tasks/:id` - Exclui uma tarefa
 
 ## Scripts Disponíveis
 
 ```bash
+# Frontend
 # Iniciar o servidor de desenvolvimento
 npm run dev
 
@@ -71,8 +100,9 @@ npm run build
 # Visualizar build em produção
 npm run serve
 
-# Executar linting
-npm run lint
+# Backend
+# Iniciar o servidor
+node server.js
 ```
 
 ## Contribuindo

@@ -31,6 +31,7 @@ import { defineComponent, ref, onMounted } from 'vue'
 import TaskForm from './components/TaskForm.vue'
 import TaskList from './components/TaskList.vue'
 import { Task } from './types/task'
+import { taskStorage } from './services/taskStorage'
 
 export default defineComponent({
   name: 'App',
@@ -42,11 +43,13 @@ export default defineComponent({
     const tasks = ref<Task[]>([])
     const editingTask = ref<Task | null>(null)
 
-    // Carregar tarefas do localStorage ao iniciar
-    onMounted(() => {
-      const savedTasks = localStorage.getItem('tasks')
-      if (savedTasks) {
-        tasks.value = JSON.parse(savedTasks)
+    // Carregar tarefas do servidor ao iniciar
+    onMounted(async () => {
+      try {
+        const savedTasks = await taskStorage.loadTasks()
+        tasks.value = savedTasks
+      } catch (error) {
+        console.error('Erro ao carregar tarefas:', error)
       }
     })
 
@@ -54,18 +57,42 @@ export default defineComponent({
       editingTask.value = { ...task }
     }
 
-    const addTask = (newTask: Task) => {
-      tasks.value.push(newTask)
-      saveTasks()
+    const addTask = async (newTask: Task) => {
+      try {
+        // Primeiro salvar a tarefa no servidor
+        await taskStorage.saveTask(newTask)
+        
+        // Depois atualizar o estado local
+        const allTasks = await taskStorage.loadTasks()
+        tasks.value = allTasks
+      } catch (error) {
+        console.error('Erro ao adicionar tarefa:', error)
+        throw error
+      }
     }
 
-    const editTask = (updatedTask: Task) => {
-      const index = tasks.value.findIndex(task => task.id === updatedTask.id)
-      if (index !== -1) {
-        tasks.value[index] = updatedTask
-        saveTasks()
+    const editTask = async (updatedTask: Task) => {
+      try {
+        // Primeiro atualizar o estado local
+        const index = tasks.value.findIndex(task => task.id === updatedTask.id)
+        if (index !== -1) {
+          tasks.value[index] = updatedTask
+        }
+        
+        // Depois salvar no servidor
+        await taskStorage.saveTask(updatedTask)
+        
+        // Recarregar as tarefas do servidor
+        tasks.value = await taskStorage.loadTasks()
+        
+        // Limpar o estado de edição
+        editingTask.value = null
+      } catch (error) {
+        console.error('Erro ao editar tarefa:', error)
+        // Se houver erro, restaurar o estado anterior
+        tasks.value = await taskStorage.loadTasks()
+        throw error
       }
-      editingTask.value = null
     }
 
     const updateTask = (updatedTask: Task) => {
@@ -76,13 +103,37 @@ export default defineComponent({
       }
     }
 
-    const deleteTask = (taskId: number) => {
-      tasks.value = tasks.value.filter(task => task.id !== taskId)
-      saveTasks()
+    const saveTasks = async () => {
+      try {
+        // Se estamos editando, atualizar a tarefa específica
+        if (editingTask.value) {
+          await taskStorage.saveTask(editingTask.value)
+          editingTask.value = null
+        } else {
+          // Se não estamos editando, adicionar a nova tarefa
+          const newTask = tasks.value[tasks.value.length - 1]
+          await taskStorage.saveTask(newTask)
+        }
+        
+        // Recarregar as tarefas do servidor
+        tasks.value = await taskStorage.loadTasks()
+      } catch (error) {
+        console.error('Erro ao salvar tarefas:', error)
+        throw error
+      }
     }
 
-    const saveTasks = () => {
-      localStorage.setItem('tasks', JSON.stringify(tasks.value))
+    const deleteTask = async (taskId: number) => {
+      try {
+        // Primeiro salvar a exclusão no servidor
+        await taskStorage.deleteTask(taskId)
+        
+        // Depois atualizar o estado local
+        tasks.value = await taskStorage.loadTasks()
+      } catch (error) {
+        console.error('Erro ao excluir tarefa:', error)
+        throw error
+      }
     }
 
     return {
