@@ -1,0 +1,29 @@
+[
+  {
+    "title": "Tirar o lixo",
+    "description": "Amarrar, tirar e por um novo saco no lixeiro.",
+    "dueDate": "2025-04-10",
+    "dueTime": "06:30",
+    "status": "pendente",
+    "createdAt": "2025-04-09T17:09:44.588Z",
+    "id": 1
+  },
+  {
+    "title": "Fazer a Janta para Familia",
+    "description": "Arroz, Feijão, Salada, Carne assada (cupim) e Maionese caseira.",
+    "dueDate": "2025-04-12",
+    "dueTime": "17:30",
+    "status": "pendente",
+    "createdAt": "2025-04-09T17:10:18.075Z",
+    "id": 2
+  },
+  {
+    "title": "Limpar geladeira",
+    "description": "Verificar produtos e limpar",
+    "dueDate": "2025-04-09",
+    "dueTime": "05:00",
+    "status": "pendente",
+    "createdAt": "2025-04-09T17:10:40.734Z",
+    "id": 3
+  }
+]
