@@ -3,6 +3,7 @@ export interface Task {
   title: string;
   description: string;
   dueDate: string;
+  dueTime: string;
   status: 'pendente' | 'concluida';
   createdAt: string;
 }

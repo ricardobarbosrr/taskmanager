@@ -1,6 +1,5 @@
 <template>
   <div class="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
-
     <div class="container mx-auto px-4 py-8">
       <header class="text-center mb-12">
         <h1 class="text-4xl font-bold text-gray-800 mb-2">Gerenciador de Tarefas</h1>
@@ -8,13 +7,19 @@
       </header>
 
       <div class="bg-white rounded-xl shadow-lg p-8 mb-8">
-        <TaskForm @add-task="addTask" />
+        <TaskForm 
+          @add-task="addTask" 
+          @edit-task="editTask"
+          :editing-task="editingTask"
+        />
       </div>
 
       <div class="bg-white rounded-xl shadow-lg p-8">
         <TaskList
           :tasks="tasks"
           @update-task="updateTask"
+          @delete-task="deleteTask"
+          @edit-task="startEditTask"
         />
       </div>
     </div>
@@ -35,6 +40,7 @@ export default defineComponent({
   },
   setup() {
     const tasks = ref<Task[]>([])
+    const editingTask = ref<Task | null>(null)
 
     // Carregar tarefas do localStorage ao iniciar
     onMounted(() => {
@@ -44,9 +50,22 @@ export default defineComponent({
       }
     })
 
+    const startEditTask = (task: Task) => {
+      editingTask.value = { ...task }
+    }
+
     const addTask = (newTask: Task) => {
       tasks.value.push(newTask)
       saveTasks()
+    }
+
+    const editTask = (updatedTask: Task) => {
+      const index = tasks.value.findIndex(task => task.id === updatedTask.id)
+      if (index !== -1) {
+        tasks.value[index] = updatedTask
+        saveTasks()
+      }
+      editingTask.value = null
     }
 
     const updateTask = (updatedTask: Task) => {
@@ -57,6 +76,11 @@ export default defineComponent({
       }
     }
 
+    const deleteTask = (taskId: number) => {
+      tasks.value = tasks.value.filter(task => task.id !== taskId)
+      saveTasks()
+    }
+
     const saveTasks = () => {
       localStorage.setItem('tasks', JSON.stringify(tasks.value))
     }
@@ -64,7 +88,11 @@ export default defineComponent({
     return {
       tasks,
       addTask,
-      updateTask
+      updateTask,
+      deleteTask,
+      editingTask,
+      editTask,
+      startEditTask
     }
   }
 })

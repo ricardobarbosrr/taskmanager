@@ -41,6 +41,8 @@
         :key="task.id"
         :task="task"
         @update-task="updateTask"
+        @delete-task="deleteTask"
+        @edit-task="editTask"
       />
     </div>
   </div>
@@ -62,7 +64,7 @@ export default defineComponent({
       required: true
     }
   },
-  emits: ['update-task'],
+  emits: ['update-task', 'delete-task', 'edit-task'] as const,
   setup(props, { emit }) {
     const filter = ref<TaskFilter>({
       status: 'all',
@@ -97,11 +99,21 @@ export default defineComponent({
       emit('update-task', updatedTask)
     }
 
+    const deleteTask = (taskId: number) => {
+      emit('delete-task', taskId)
+    }
+
+    const editTask = (task: Task) => {
+      emit('edit-task', task)
+    }
+
     return {
       filter,
       filteredTasks,
       applyFilter,
-      updateTask
+      updateTask,
+      deleteTask,
+      editTask
     }
   }
 })
